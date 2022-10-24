@@ -277,7 +277,7 @@ object ReforgeGUI {
             )
 
             onRender { player, menu ->
-                menu.addState(
+                menu.setState(
                     player, "item_to_reforge", menu.getCaptiveItem(
                         player,
                         plugin.configYml.getInt("gui.item-slot.row"),
@@ -285,7 +285,7 @@ object ReforgeGUI {
                     )
                 )
 
-                menu.addState(
+                menu.setState(
                     player, "reforge_stone", menu.getCaptiveItem(
                         player,
                         plugin.configYml.getInt("gui.stone-slot.row"),
@@ -308,16 +308,20 @@ object ReforgeGUI {
                         ReforgeStatus.INVALID_ITEM
                     } else {
                         val reforgeStone = stone.reforgeStone
-                        if (reforgeStone != null && reforgeStone.canBeAppliedTo(item)) {
-                            cost = reforgeStone.stonePrice.toDouble()
-                            ReforgeStatus.ALLOW_STONE
-                        } else {
+                        if (reforgeStone == null) {
                             ReforgeStatus.ALLOW
+                        } else {
+                            if (reforgeStone.canBeAppliedTo(item)) {
+                                cost = reforgeStone.stonePrice.toDouble()
+                                ReforgeStatus.ALLOW_STONE
+                            } else {
+                                ReforgeStatus.INVALID_ITEM
+                            }
                         }
                     }
                 }
 
-                menu.addState(player, "reforge_status", PricedReforgeStatus(status, cost))
+                menu.setState(player, "reforge_status", PricedReforgeStatus(status, cost))
             }
 
             onClose { event, menu ->
